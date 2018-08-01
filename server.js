@@ -5,7 +5,7 @@ const url = require('url');
 const qs = require('querystring');
 var MongoClient = require('mongodb').MongoClient;
 
-const hostname = '127.0.0.1';
+const hostname = '0.0.0.0';
 const port = 3000;
 
 const mongoHost = 'mongodb://localhost:27017/aniq';
