@@ -8,7 +8,8 @@ var MongoClient = require('mongodb').MongoClient;
 const hostname = '0.0.0.0';
 const port = 3000;
 
-const mongoHost = 'mongodb://localhost:27017/aniq';
+const mongoHost = 'mongodb://aniq-mongodb:27018/aniq';
+//const mongoHost = 'mongodb://localhost:27017/aniq';
 const mongoPort = 27017
 
 const httpServer = http.createServer(requestResponseHandler);
