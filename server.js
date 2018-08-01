@@ -38,23 +38,6 @@ function requestResponseHandler(req, res) {
       dataToSent = callback + "(" + JSON.stringify(content) + ")";
       sendResponse(dataToSent, 'application/json', res);
     });
-  } else {
-    sendResponse(req.url, getContentType(req.url), res);
-  }
-}
-
-function getContentType(url) {
-  switch (path.extname(url)) {
-    case '.html':
-      return 'text/html';
-    case '.css':
-      return 'text/css';
-    case '.js':
-      return 'text/javascript';
-    case '.json':
-      return 'application/json';
-    default:
-      return 'application/octate-stream';
   }
 }
 
