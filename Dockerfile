@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:alpine
 
 # Create app directory
 WORKDIR /app/node-server
@@ -15,5 +15,5 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 8080
+EXPOSE 3000
 CMD [ "npm", "start" ]
