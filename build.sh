@@ -12,9 +12,4 @@ echo "################################################"
 sudo docker 2>/dev/null rmi -f $(docker images -q --filter "dangling=true")
 sudo docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi -f
 
-echo "################################################"
-echo "Run Images"
-echo "################################################"
-
-sudo docker-compose rm -f
-sudo docker-compose up -d
+docker images
