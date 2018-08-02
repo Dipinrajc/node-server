@@ -60,7 +60,27 @@ function requestResponseHandler(req, res) {
         dataToSent = callback + "(" + JSON.stringify(content) + ")";
         sendResponse(dataToSent, 'application/json', res);
       });
-    }
+    } else if(req.url.indexOf('v3/') > -1){
+      checkApiKeyFirst(req, res, query.apiKey).then((result) => {
+        if (req.url.indexOf('v3/update-rating') > -1) {
+          updateRatingThird(req, res, query.productId, query.callback);
+        }    
+      }).catch((error) => {
+        content = { 'success': false, 'error': 'Invalid Api key' };
+        dataToSent = callback + "(" + JSON.stringify(content) + ")";
+        sendResponse(dataToSent, 'application/json', res);
+      });
+    } else if(req.url.indexOf('v4/') > -1){
+      checkApiKeySecond(req, res, query.apiKey).then((result) => {
+        if (req.url.indexOf('v4/update-rating') > -1) {
+          updateRatingFourth(req, res, query.productId, query.callback);
+        }      
+      }).catch((error) => {
+        content = { 'success': false, 'error': 'Invalid Api key' };
+        dataToSent = callback + "(" + JSON.stringify(content) + ")";
+        sendResponse(dataToSent, 'application/json', res);
+      });
+    }    
   }
 }
 
@@ -149,6 +169,44 @@ function updateRatingSecond(req, res, productId, callback) {
         dataToSent = callback + "(" + JSON.stringify(content) + ")";
         sendResponse(dataToSent, 'application/json', res);
       });
+    });
+  });
+}
+
+function updateRatingThird(req, res, productId, callback) {
+  MongoClient.connect(mongoHost, function (err, client) {
+    if (err) throw err;
+    const db = client.db('aniq');
+    var rating = 0;
+    const collection = db.collection('products');
+    collection.findAndModify({ "productId": productId }, [], { $inc: { rating: 1 } }, { upsert: true, new: true }, function (err, result) {
+      client.close();
+      if (err) throw err; 
+      if (null != result) {
+        rating = result.value.rating | 0;
+      }
+      content = { 'success': true, 'rating': rating };
+      dataToSent = callback + "(" + JSON.stringify(content) + ")";
+      sendResponse(dataToSent, 'application/json', res);
+    });
+  });
+}
+
+function updateRatingFourth(req, res, productId, callback) {
+  MongoClient.connect(cosmosHost, function (err, client) {
+    if (err) throw err;
+    const db = client.db('aniq');
+    var rating = 0;
+    const collection = db.collection('products');
+    collection.findAndModify({ "productId": productId }, [], { $inc: { rating: 1 } }, { upsert: true, new: true }, function (err, result) {
+      client.close();
+      if (err) throw err; 
+      if (null != result) {
+        rating = result.value.rating | 0;
+      }
+      content = { 'success': true, 'rating': rating };
+      dataToSent = callback + "(" + JSON.stringify(content) + ")";
+      sendResponse(dataToSent, 'application/json', res);
     });
   });
 }
