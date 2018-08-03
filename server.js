@@ -10,8 +10,8 @@ const hostname = '0.0.0.0';
 const port = 3000;
 
 const mongoHost = 'mongodb://aniq-mongodb:27018/aniq';
-const cosmosHost = "mongodb://mongoani:mUby2OvPiKegjDgct9SjrBhYwSvVWZkmKbG0viDCKDIRLVg48LLbngHADydFgb8mbs3X1fQkgjIQOftwyupMCw%3D%3D@mongoani.documents.azure.com:10255/?ssl=true";
-
+//const cosmosHost = "mongodb://mongoani:mUby2OvPiKegjDgct9SjrBhYwSvVWZkmKbG0viDCKDIRLVg48LLbngHADydFgb8mbs3X1fQkgjIQOftwyupMCw%3D%3D@mongoani.documents.azure.com:10255/?ssl=true";
+const cosmosHost = "mongodb://animongo:eTDJLkDMz0UhctTrjYNbj51R8H7JjsTOyKH1SLu9Z1MrWEMNcmWlqZxiKd6hjeZaFeaSz6PkO2i4PhZtbC3Rmw%3D%3D@animongo.documents.azure.com:10255/?ssl=true";
 //const mongoHost = 'mongodb://localhost:27017/aniq';
 const mongoPort = 27017
 
