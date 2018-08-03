@@ -6,13 +6,16 @@ const url = require('url');
 const qs = require('querystring');
 var MongoClient = require('mongodb').MongoClient;
 
+var express = require('express');
+var app = express();
+
 const hostname = '0.0.0.0';
 const port = 3000;
 
-const mongoHost = 'mongodb://aniq-mongodb:27018/aniq';
+//const mongoHost = 'mongodb://aniq-mongodb:27018/aniq';
 //const cosmosHost = "mongodb://mongoani:mUby2OvPiKegjDgct9SjrBhYwSvVWZkmKbG0viDCKDIRLVg48LLbngHADydFgb8mbs3X1fQkgjIQOftwyupMCw%3D%3D@mongoani.documents.azure.com:10255/?ssl=true";
 const cosmosHost = "mongodb://animongo:eTDJLkDMz0UhctTrjYNbj51R8H7JjsTOyKH1SLu9Z1MrWEMNcmWlqZxiKd6hjeZaFeaSz6PkO2i4PhZtbC3Rmw%3D%3D@animongo.documents.azure.com:10255/?ssl=true";
-//const mongoHost = 'mongodb://localhost:27017/aniq';
+const mongoHost = 'mongodb://localhost:27017/aniq';
 const mongoPort = 27017
 
 var certsPath = path.join(__dirname, 'certs', 'server');
@@ -23,73 +26,72 @@ options = {
 , rejectUnauthorized: true
 };
 
-const httpServer = https.createServer(options,requestResponseHandler);
+const httpServer = https.createServer(options,app);
 
-
-//const httpServer = http.createServer(requestResponseHandler);
 httpServer.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 
-function requestResponseHandler(req, res) {
-  if (req.method === 'GET') {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
-    let callback = query.callback;
-    if(req.url.indexOf('v1/') > -1){
-      checkApiKeyFirst(req, res, query.apiKey).then((result) => {
-        if (req.url.indexOf('v1/get-rating') > -1) {
-          getRatingFirst(req, res, query.productId, query.callback);
-        } else if (req.url.indexOf('v1/update-rating') > -1) {
-          updateRatingFirst(req, res, query.productId, query.callback);
-        }   
-      }).catch((error) => {
-        content = { 'success': false, 'error': 'Invalid Api key' };
-        dataToSent = callback + "(" + JSON.stringify(content) + ")";
-        sendResponse(dataToSent, 'application/json', res);
-      });
-    }else if(req.url.indexOf('v2/') > -1){
-      checkApiKeySecond(req, res, query.apiKey).then((result) => {
-        if (req.url.indexOf('v2/get-rating') > -1) {
-          getRatingSecond(req, res, query.productId, query.callback);
-        } else if (req.url.indexOf('v2/update-rating') > -1) {
-          updateRatingSecond(req, res, query.productId, query.callback);
-        }      
-      }).catch((error) => {
-        content = { 'success': false, 'error': 'Invalid Api key' };
-        dataToSent = callback + "(" + JSON.stringify(content) + ")";
-        sendResponse(dataToSent, 'application/json', res);
-      });
-    } else if(req.url.indexOf('v3/') > -1){
-      checkApiKeyFirst(req, res, query.apiKey).then((result) => {
-        if (req.url.indexOf('v3/update-rating') > -1) {
-          updateRatingThird(req, res, query.productId, query.callback);
-        }    
-      }).catch((error) => {
-        content = { 'success': false, 'error': 'Invalid Api key' };
-        dataToSent = callback + "(" + JSON.stringify(content) + ")";
-        sendResponse(dataToSent, 'application/json', res);
-      });
-    } else if(req.url.indexOf('v4/') > -1){
-      checkApiKeySecond(req, res, query.apiKey).then((result) => {
-        if (req.url.indexOf('v4/update-rating') > -1) {
-          updateRatingFourth(req, res, query.productId, query.callback);
-        }      
-      }).catch((error) => {
-        content = { 'success': false, 'error': 'Invalid Api key' };
-        dataToSent = callback + "(" + JSON.stringify(content) + ")";
-        sendResponse(dataToSent, 'application/json', res);
-      });
-    }    
-  }
+function sendErrorResponse(callback, res) {
+  content = { 'success': false, 'error': 'Invalid Api key' };
+    dataToSent = callback + "(" + JSON.stringify(content) + ")";
+    sendResponse(dataToSent, 'application/json', res);
 }
+
+app.use (function(req, res, next) {
+  query = req.query;
+  checkApiMethod = null;
+  if(req.url.indexOf('v1') > -1 || req.url.indexOf('v3') > -1){
+    checkApiMethod = checkApiKeyFirst;
+  }else{
+    checkApiMethod = checkApiKeySecond;
+  }
+  checkApiMethod(req, res, query.apiKey).then((response)=>{
+    next();
+  }).catch((error) => {
+    sendErrorResponse(query.callback, res);
+  });
+});
+
+app.get('/', function(req,res) {
+  res.send('hello');
+});
+
+app.get('/v1/get-rating', function(req,res) {
+  query = req.query;
+  getRatingFirst(req, res, query.productId, query.callback);
+});
+
+app.get('/v2/get-rating', function(req,res) {
+  query = req.query;
+  getRatingSecond(req, res, query.productId, query.callback);
+});
+
+app.get('/v1/update-rating', function(req,res) {
+  query = req.query;
+  updateRatingFirst(req, res, query.productId, query.callback);
+});
+
+app.get('/v2/update-rating', function(req,res) {
+  query = req.query;
+  updateRatingSecond(req, res, query.productId, query.callback);
+});
+
+app.get('/v3/update-rating', function(req,res) {
+  query = req.query;
+  updateRatingThird(req, res, query.productId, query.callback);
+});
+
+app.get('/v4/update-rating', function(req,res) {
+  query = req.query;
+  updateRatingFourth(req, res, query.productId, query.callback);
+});
 
 function sendResponse(content, contentType, res) {
   res.writeHead(200, { 'Content-Type': contentType });
   res.write(content);
   res.end();
 }
-
 
 function getRatingFirst(req, res, productId, callback) {
   MongoClient.connect(mongoHost, function (err, client) {
