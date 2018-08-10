@@ -18,7 +18,7 @@ const mongoPort = 27017
 var certsPath = path.join(__dirname);
 options = {
   key: fs.readFileSync(path.join(certsPath, 'myserver.key'))
-, cert: fs.readFileSync(path.join(certsPath, 'server.crt'))
+, cert: fs.readFileSync(path.join(certsPath, 'server.csr'))
 , requestCert: false
 , rejectUnauthorized: true
 };
