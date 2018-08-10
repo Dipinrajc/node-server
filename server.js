@@ -15,10 +15,10 @@ const cosmosHost = "mongodb://animongo:eTDJLkDMz0UhctTrjYNbj51R8H7JjsTOyKH1SLu9Z
 //const mongoHost = 'mongodb://localhost:27017/aniq';
 const mongoPort = 27017
 
-var certsPath = path.join(__dirname, 'certs', 'server');
+var certsPath = path.join(__dirname);
 options = {
-  key: fs.readFileSync(path.join(certsPath, 'my-server.key.pem'))
-, cert: fs.readFileSync(path.join(certsPath, 'my-server.crt.pem'))
+  key: fs.readFileSync(path.join(certsPath, 'myserver.key'))
+, cert: fs.readFileSync(path.join(certsPath, 'server.crt'))
 , requestCert: false
 , rejectUnauthorized: true
 };
